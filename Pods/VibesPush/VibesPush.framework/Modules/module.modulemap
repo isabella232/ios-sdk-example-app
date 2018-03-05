@@ -1,0 +1,11 @@
+framework module VibesPush {
+  umbrella header "VibesPush.h"
+
+  export *
+  module * { export * }
+}
+
+module VibesPush.Swift {
+    header "VibesPush-Swift.h"
+    requires objc
+}

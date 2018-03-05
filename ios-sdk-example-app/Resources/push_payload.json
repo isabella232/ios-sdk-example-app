@@ -1,0 +1,13 @@
+{
+  "aps": {
+    "alert": {
+      "title": "Cool title!",
+      "subtitle": "From Vibes",
+      "body": "Push push 🙌"
+    }
+  },
+  "client_app_data": {
+    "client_message_uid": "fgfCHIUHIY8484FYIHWF",
+    "deep_link": "pushView"
+  }
+}
