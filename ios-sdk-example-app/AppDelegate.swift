@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     public let tokenObserver = ReplaySubject<Data>.create(bufferSize: 1)
     
     // Constants
-    fileprivate let kAppKey = "YOUR APP KEY HERE" /// Change the value with the one provided by Vibes
+    fileprivate let kAppKey = "[YOUR APP KEY HERE]" /// Change the value with the one provided by Vibes
     fileprivate let kClientDataKey = "client_app_data"
     fileprivate let kDeepLinkKey = "deep_link"
     fileprivate let kPushDeepLinkView = "pushView"
@@ -27,7 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     fileprivate let deepLinkViewController = PushNotificationViewController()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        Vibes.configure(appId: kAppKey)
+        Vibes.configure(appId: kAppKey,
+                        trackedEventTypes: [TrackedEventType.launch, TrackedEventType.clickthru] as NSArray,
+                        storageType: VibesStorageEnum.KEYCHAIN,
+                        advertisingId: "blank",
+                        logger: nil, // if nil it will take the default one `ConsoleLogger`
+                        apiUrl: nil) // if nil it will take the default one
         
         // Push notification subscription
         if #available(iOS 10.0, *) {
@@ -105,7 +110,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /// your choice when he clicks on the push notification. The deep_link format is free
     /// (best practice:{nameApp}://{viewcontrollers}{%parameters}
     fileprivate func receivePushNotif(userInfo: [AnyHashable : Any]) {
-        Vibes.configure(appId: kAppKey)
+        Vibes.configure(appId: kAppKey,
+                        trackedEventTypes: [TrackedEventType.launch, TrackedEventType.clickthru] as NSArray,
+                        storageType: VibesStorageEnum.KEYCHAIN,
+                        advertisingId: "blank",
+                        logger: nil, // if nil it will take the default one `ConsoleLogger`
+                        apiUrl: nil) // if nil it will take the default one
         Vibes.shared.receivedPush(with: userInfo)
         
         // Over simplified deep_link mechanism, but you get the idea.

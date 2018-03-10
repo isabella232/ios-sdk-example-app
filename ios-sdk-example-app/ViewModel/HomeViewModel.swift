@@ -48,12 +48,11 @@ class HomeViewModel: NSObject {
     /// Update location action
     public func updateLocation() {
         // Fake location info
-        let location = (lat: 48.866667, long: 2.333333)
-        self.vibesController.updateUserLocation(location: location) { (success, errorMsg) in
-            if (success) {
-                // Do something
+        self.vibesController.updateUserLocation(lat: 48.866667, long: 2.333333) { error in
+            if (error == nil) {
+                print("--> Update User Location --> Success")
             } else {
-                // Do something else
+                print("--> Update User Location --> Failure: \(String(describing: error?.localizedDescription))")
             }
         }
     }
@@ -64,17 +63,19 @@ class HomeViewModel: NSObject {
     /// logic could be applied: push into an Observable any error and the UI would be responsible to
     /// display it (popup...)
     fileprivate func registerDevice() {
-        self.vibesController.registerDevice(completionHandler: {[weak self] (success, deviceId, errorMsg) in
-            guard let _self = self else { return }
-            if (success) {
-                _self.regDevBtnTitleSubj.value = NSLocalizedString("homeView.unregisterButton", comment: "")
-                _self.deviceIdValueSubj.value = deviceId
-                _self.deviceRegistered = true
-                _self.pushButtonEnableStateSubj.value = true
-                _self.updateLocButtonEnableStateSubj.value = true
-            } else {
+        self.vibesController.registerDevice(completionHandler: {[weak self] (deviceId, error) in
+            guard let _self = self, error == nil, let device_id = deviceId
+            else {
                 // Could display the error
+                print("--> Register Device --> Failure: \(String(describing: error?.localizedDescription))")
+                return
             }
+            print("--> Register Device --> Success (deviceId: \(device_id))")
+            _self.regDevBtnTitleSubj.value = NSLocalizedString("homeView.unregisterButton", comment: "")
+            _self.deviceIdValueSubj.value = device_id
+            _self.deviceRegistered = true
+            _self.pushButtonEnableStateSubj.value = true
+            _self.updateLocButtonEnableStateSubj.value = true
         })
     }
     
@@ -87,24 +88,26 @@ class HomeViewModel: NSObject {
     /// For this example app, we don't handle error cases but the same logic could be applied: push
     /// into an Observable any error and the UI would be responsible to display it (popup...)
     fileprivate func unregisterDevice() {
-        self.vibesController.unregisterDevice(completionHandler: {[weak self] (success, errorMsg) in
-            guard let _self = self else { return }
-            if (success) {
-                _self.regDevBtnTitleSubj.value = NSLocalizedString("homeView.registerButton", comment: "")
-                _self.deviceIdValueSubj.value = NSLocalizedString("homeView.deviceLabelDefaultValue", comment: "")
-                _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.registerPushButton", comment: "")
-                _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushunregistered", comment: ""), UIColor.red)
-                _self.deviceRegistered = false
-                // Unregistering device does a unregister push as well on the backend side.
-                // Having a separate unregisterPush allows Vibes customer app to manager user preference
-                // individually (unregister push with having the device registered allows the app to keep
-                // recording app events such as 'launch')
-                _self.devicePushRegistered = false
-                _self.pushButtonEnableStateSubj.value = false
-                _self.updateLocButtonEnableStateSubj.value = false
-            } else {
+        self.vibesController.unregisterDevice(completionHandler: {[weak self] error in
+            guard let _self = self, error == nil
+            else {
                 // Could display the error
+                print("--> Unregister Device -> Failure: \(String(describing: error?.localizedDescription))")
+                return
             }
+            print("--> Unregister Device -> Success")
+            _self.regDevBtnTitleSubj.value = NSLocalizedString("homeView.registerButton", comment: "")
+            _self.deviceIdValueSubj.value = NSLocalizedString("homeView.deviceLabelDefaultValue", comment: "")
+            _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.registerPushButton", comment: "")
+            _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushunregistered", comment: ""), UIColor.red)
+            _self.deviceRegistered = false
+            // Unregistering device does a unregister push as well on the backend side.
+            // Having a separate unregisterPush allows Vibes customer app to manager user preference
+            // individually (unregister push with having the device registered allows the app to keep
+            // recording app events such as 'launch')
+            _self.devicePushRegistered = false
+            _self.pushButtonEnableStateSubj.value = false
+            _self.updateLocButtonEnableStateSubj.value = false
         })
     }
     
@@ -119,15 +122,16 @@ class HomeViewModel: NSObject {
         let userDefault = UserDefaults.standard
         let tokenData = userDefault.data(forKey: ExampleConstant.APNS_TOKEN.rawValue)
         if let token = tokenData {
-            self.vibesController.registerPush(token: token, completionHandler: {[weak self] (success, errorMsg) in
-                guard let _self = self else { return }
-                if (success) {
-                    _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushregistered", comment: ""), UIColor.green)
-                    _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.unregisterPushButton", comment: "")
-                    _self.devicePushRegistered = true
-                } else {
-                    // Could display the error
+            self.vibesController.registerPush(token: token, completionHandler: {[weak self] error in
+                guard let _self = self, error == nil
+                else {
+                    print("--> Register PUSH --> Failure: \(String(describing: error?.localizedDescription))")
+                    return
                 }
+                print("--> Register PUSH --> Success")
+                _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushregistered", comment: ""), UIColor.green)
+                _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.unregisterPushButton", comment: "")
+                _self.devicePushRegistered = true
             })
         }
     }
@@ -143,15 +147,16 @@ class HomeViewModel: NSObject {
         let userDefault = UserDefaults.standard
         let tokenData = userDefault.data(forKey: ExampleConstant.APNS_TOKEN.rawValue)
         if let token = tokenData {
-            self.vibesController.unregisterPush(token: token, completionHandler: {[weak self] (success, errorMsg) in
-                guard let _self = self else { return }
-                if (success) {
-                    _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushunregistered", comment: ""), UIColor.red)
-                    _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.registerPushButton", comment: "")
-                    _self.devicePushRegistered = false
-                } else {
-                    // Could display the error
+            self.vibesController.unregisterPush(token: token, completionHandler: {[weak self] error in
+                guard let _self = self, error == nil
+                else {
+                    print("--> Unregister PUSH --> Failure: \(String(describing: error?.localizedDescription))")
+                    return
                 }
+                print("--> Unregister PUSH --> Success")
+                _self.regPushLabelTitleSubj.value = (NSLocalizedString("homeView.pushunregistered", comment: ""), UIColor.red)
+                _self.regPushBtnTitleSubj.value = NSLocalizedString("homeView.registerPushButton", comment: "")
+                _self.devicePushRegistered = false
             })
         }
     }

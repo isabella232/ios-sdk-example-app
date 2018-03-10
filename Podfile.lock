@@ -17,21 +17,21 @@ PODS:
   - RxCocoa (3.6.1):
     - RxSwift (~> 3.6)
   - RxSwift (3.6.1)
-  - VibesPush (1.0.3.sw4)
+  - VibesPush (2.0.0.sw4)
 
 DEPENDENCIES:
   - OHHTTPStubs
   - OHHTTPStubs/Swift
   - RxCocoa
   - RxSwift (~> 3.0)
-  - VibesPush (= 1.0.3.sw4)
+  - VibesPush (= 2.0.0.sw4)
 
 SPEC CHECKSUMS:
   OHHTTPStubs: 1e21c7d2c084b8153fc53d48400d8919d2d432d0
   RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
   RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
-  VibesPush: 2b9cc685a545fac2d4f8cf2a15e9787e93ee38ef
+  VibesPush: 09886face6e4147ce39d384cb796441ba6c53a71
 
-PODFILE CHECKSUM: f621b6edc95f1c5596d0bcdd9420120d39f98bfd
+PODFILE CHECKSUM: 3a75d8a7db5a37314f3662809cab1b74ed66f1b6
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0

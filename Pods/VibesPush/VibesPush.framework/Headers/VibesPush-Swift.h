@@ -172,8 +172,8 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 # define SWIFT_DEPRECATED_OBJC(Msg) SWIFT_DEPRECATED_MSG(Msg)
 #endif
 #if __has_feature(modules)
-@import ObjectiveC;
 @import Foundation;
+@import ObjectiveC;
 #endif
 
 #pragma clang diagnostic ignored "-Wproperty-attribute-mismatch"
@@ -186,24 +186,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 SWIFT_MODULE_NAMESPACE_PUSH("VibesPush")
 
-/// Observes app lifecycle events and tracks events.
-SWIFT_CLASS("_TtC9VibesPush11AppObserver")
-@interface AppObserver : NSObject
-/// Tracks when the application became active. If there’s a push
-/// notification, this fires after it is received by the AppDelegate.
-/// \param the notification fired by iOS 
-///
-- (void)applicationDidBecomeActive:(NSNotification * _Nonnull)notification;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
-
-@class NSDateFormatter;
-
-@interface NSFormatter (SWIFT_EXTENSION(VibesPush))
-/// A date formatter for generating ISO8601-compatible timestamp strings.
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSDateFormatter * _Nonnull iso8601;)
-+ (NSDateFormatter * _Nonnull)iso8601 SWIFT_WARN_UNUSED_RESULT;
-@end
 
 
 @interface NSHTTPURLResponse (SWIFT_EXTENSION(VibesPush))
@@ -212,50 +194,197 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSDateFormat
 @end
 
 
-@interface NSInputStream (SWIFT_EXTENSION(VibesPush))
-/// Read input stream to a String
-- (NSString * _Nullable)readToString SWIFT_WARN_UNUSED_RESULT;
+
+
+SWIFT_CLASS("_TtC9VibesPush17MessageCollection")
+@interface MessageCollection : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+typedef SWIFT_ENUM(NSInteger, TrackedEventType) {
+/// Undefined case, since we parse a string in the convert method
+  TrackedEventTypeUndefined = 0,
+/// A launch event, tracked when the app is first opened
+  TrackedEventTypeLaunch = 1,
+/// A clickthru event, tracked when the app is opened from a push
+/// notification
+  TrackedEventTypeClickthru = 2,
+};
+
+
+
+
+
+@protocol VibesAPIDelegate;
+@class NSArray;
+enum VibesStorageEnum : NSInteger;
+@protocol VibesLogger;
+@class PKAddPassesViewController;
+
+/// The main entry point for usage of the Vibes API.
+SWIFT_CLASS("_TtC9VibesPush5Vibes")
+@interface Vibes : NSObject
+/// The released version of the Vibes SDK
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _Nonnull SDK_VERSION;)
++ (NSString * _Nonnull)SDK_VERSION SWIFT_WARN_UNUSED_RESULT;
+/// Register push status
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _Nonnull REGISTER_PUSH_STATUS;)
++ (NSString * _Nonnull)REGISTER_PUSH_STATUS SWIFT_WARN_UNUSED_RESULT;
+/// List of Vibes delegates
+@property (nonatomic, strong) id <VibesAPIDelegate> _Nullable delegate;
+/// The shared (singleton) instance of Vibes.
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) Vibes * _Null_unspecified shared;)
++ (Vibes * _Null_unspecified)shared SWIFT_WARN_UNUSED_RESULT;
+/// Trick to detect wheter the application has been started for
+/// executing unit tests. In that case, we don’t want to send
+/// events to Vibes backend.
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) BOOL isRunningThroughUnitTest;)
++ (BOOL)isRunningThroughUnitTest SWIFT_WARN_UNUSED_RESULT;
+/// Configure the shared Vibes instance. This must be called before using any
+/// of the functionality of Vibes, like registering your device.
+/// \param appId the application ID provided by Vibes to identify this
+/// application
+///
+/// \param trackEventTypes NSArray for Objc interoperability , type of tracking
+/// events sent to Vibes; if not present, all events type (.launch, .clickthru)
+/// will be monitored.
+///
+/// \param storageType define the type of storage for storing data locally; if not
+/// present, data will be securely stored in the Keychain.
+///
+/// \param advertisingId AdSupport.advertisingId. If the application doesn’t
+/// support it nil will be sent as value to the backend.
+///
+/// \param logger the logger to use. Defaults to a ConsoleLogger.
+///
+/// \param apiUrl an optional URL to hit for accessing for the Vibes API; if not
+/// present, the staging URL will be used.
+///
++ (void)configureWithAppId:(NSString * _Nonnull)appId trackedEventTypes:(NSArray * _Nonnull)trackedEventTypes storageType:(enum VibesStorageEnum)storageType advertisingId:(NSString * _Nullable)advertisingId logger:(id <VibesLogger> _Nullable)logger apiUrl:(NSString * _Nullable)apiUrl;
+/// Add a new Vibes delegate to the list of current delegates.
+/// \param observer VibesAPIDelegate
+///
+- (void)setWithDelegate:(id <VibesAPIDelegate> _Nonnull)delegate;
+/// Get the status of the device registration
+///
+/// returns:
+/// Boolean
+- (BOOL)isDeviceRegistered SWIFT_WARN_UNUSED_RESULT;
+/// Get the status of the device push registration
+///
+/// returns:
+/// Boolean
+- (BOOL)isDevicePushRegistered SWIFT_WARN_UNUSED_RESULT;
+/// Parses the push token from the Data that Apple sends, and stores it
+/// locally by converting the data to a hex string. Once this has been called,
+/// <code>registerPush</code> can be called at will to enable push notifications from
+/// Vibes.
+/// \param fromData the data send from Apple and received in your AppDelegate’s
+/// <code>application:didRegisterForRemoteNotificationsWithDeviceToken</code> function.
+///
+- (void)setPushTokenFromData:(NSData * _Nonnull)data;
+/// Notify Vibes that a push message has been tapped on.
+/// <ul>
+///   <li>
+///     parameters:
+///   </li>
+///   <li>
+///     userInfo: the details from the remote notification
+///   </li>
+///   <li>
+///     timestamp: an optional date for the receipt of the push notification
+///     (default: now)
+///   </li>
+/// </ul>
+- (void)receivedPushWith:(NSDictionary * _Nonnull)userInfo at:(NSDate * _Nonnull)timestamp;
+/// Handle wallet pass payload in a push notification. This method will be called when a push notification is received
+/// in the Customer AppDelegate class. If ‘wallet’ exits in the payload, it will download the pkpass, add it to a
+/// PKAddViewController and return the instance of PKAddViewController.
+/// \param notification Notification payload
+///
+/// \param completion a hanlder for receiving PKAddViewController
+///
+- (void)handleWalletPassWithNotification:(NSDictionary * _Nonnull)notification completion:(void (^ _Nonnull)(PKAddPassesViewController * _Nullable))completion;
+/// ////////////////////////////////////////// OPERATIONS /////////////////////////////////////////////
+/// Registers this device with Vibes.
+- (void)registerDevice;
+/// Unregisters this device with Vibes.
+- (void)unregisterDevice;
+/// Updates this device with Vibes.
+/// \param lat latitude of the User location.
+///
+/// \param long longitude of the User location
+///
+- (void)updateDeviceWithLat:(double)lat long:(double)long_;
+/// Register push notifications for this device with Vibes.
+- (void)registerPush;
+/// Unregister push notifications for this device with Vibes.
+- (void)unregisterPush;
+/// Get inbox messages.
+- (void)getInboxMessages;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 
-
-
-
-@class NSCachedURLResponse;
-@protocol NSURLProtocolClient;
-
-/// A custom URLProtocol implementation to add logging of HTTP requests,
-/// responses, and errors in an aspect-oriented way.
-SWIFT_CLASS("_TtC9VibesPush16VibesURLProtocol")
-@interface VibesURLProtocol : NSURLProtocol
-/// Registers this protocol class as a URLProtocol.
-+ (void)register;
-/// Un-registers this protocol class as a URLProtocol.
-+ (void)unregister;
-/// Determines if this URLProtocol can handle a given request.
-/// \param request the URLRequest in question
+SWIFT_PROTOCOL("_TtP9VibesPush16VibesAPIDelegate_")
+@protocol VibesAPIDelegate
+@optional
+/// Callback to inform SDK users of the result of the device registration
+/// \param deviceId the vibes device id that uniquely identifies the registered device
 ///
-+ (BOOL)canInitWithRequest:(NSURLRequest * _Nonnull)request SWIFT_WARN_UNUSED_RESULT;
-/// Determines the canonical request for a given request.
-/// \param request the URLRequest in question
+/// \param error Registration device error
 ///
-+ (NSURLRequest * _Nonnull)canonicalRequestForRequest:(NSURLRequest * _Nonnull)request SWIFT_WARN_UNUSED_RESULT;
-/// Starts loading the request in question.
-- (void)startLoading;
-/// Stops loading the request in question.
-- (void)stopLoading;
-- (nonnull instancetype)initWithRequest:(NSURLRequest * _Nonnull)request cachedResponse:(NSCachedURLResponse * _Nullable)cachedResponse client:(id <NSURLProtocolClient> _Nullable)client OBJC_DESIGNATED_INITIALIZER;
+- (void)didRegisterDeviceWithDeviceId:(NSString * _Nullable)deviceId error:(NSError * _Nullable)error;
+/// Callback to inform SDK users of the result of the device unregistration
+/// \param error Unregistration device error
+///
+- (void)didUnregisterDeviceWithError:(NSError * _Nullable)error;
+/// Callback to inform SDK users of the result of the device push registration
+/// \param error Push registration error
+///
+- (void)didRegisterPushWithError:(NSError * _Nullable)error;
+/// Callback to inform SDK users of the result of the device push unregistration
+/// \param error Push unregistration error
+///
+- (void)didUnregisterPushWithError:(NSError * _Nullable)error;
+/// Callback to inform SDK users of the result of the device location update
+/// \param error Location update error
+///
+- (void)didUpdateDeviceLocationWithError:(NSError * _Nullable)error;
+/// Callback to inform SDK users of the result of getting Inbox messages.
+/// \param messages Inbox messages repository
+///
+/// \param error Inbox messages get error
+///
+- (void)didGetInboxMessagesWithMessages:(MessageCollection * _Nullable)messages error:(NSError * _Nullable)error;
 @end
 
-@class NSURLConnection;
 @class NSURLResponse;
 
-@interface VibesURLProtocol (SWIFT_EXTENSION(VibesPush)) <NSURLConnectionDataDelegate>
-- (void)connection:(NSURLConnection * _Nonnull)connection didReceiveResponse:(NSURLResponse * _Nonnull)response;
-- (void)connection:(NSURLConnection * _Nonnull)connection didReceiveData:(NSData * _Nonnull)data;
-- (void)connectionDidFinishLoading:(NSURLConnection * _Nonnull)connection;
-- (void)connection:(NSURLConnection * _Nonnull)connection didFailWithError:(NSError * _Nonnull)error;
+/// A protocol for logging the Vibes SDK’s HTTP-related logs
+SWIFT_PROTOCOL("_TtP9VibesPush11VibesLogger_")
+@protocol VibesLogger
+/// Logs an HTTP request.
+/// \param request the HTTP request to log
+///
+- (void)logWithRequest:(NSURLRequest * _Nonnull)request;
+/// Logs an HTTP response with its accompanying data.
+/// \param response the HTTP response to log
+///
+/// \param data the data received, if any
+///
+- (void)logWithResponse:(NSURLResponse * _Nonnull)response data:(NSData * _Nullable)data;
+/// Logs an error.
+/// \param error the error that occurred
+///
+- (void)logWithError:(NSError * _Nonnull)error;
 @end
+
+/// Type of storage to store credential
+typedef SWIFT_ENUM(NSInteger, VibesStorageEnum) {
+  VibesStorageEnumKEYCHAIN = 0,
+  VibesStorageEnumUSERDEFAULTS = 1,
+};
 
 SWIFT_MODULE_NAMESPACE_POP
 #pragma clang diagnostic pop

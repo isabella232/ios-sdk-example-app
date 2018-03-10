@@ -12,8 +12,8 @@ import RxSwift
 
 class HomeViewController: UIViewController {
   // Labels
-  fileprivate let vibeDeviceId = VibesLabel(title: "homeView.deviceLabel")
-  fileprivate let vibeDeviceIdValue = VibesLabel(title: "", font: UIFont.systemFont(ofSize: 15),
+  fileprivate let vibesDeviceId = VibesLabel(title: "homeView.deviceLabel")
+  fileprivate let vibesDeviceIdValue = VibesLabel(title: "", font: UIFont.systemFont(ofSize: 15),
                                                  color: UIColor.vibesValueLabel())
   fileprivate let pushRegisteredLabel = VibesLabel(title: "homeView.pushunregistered", color: .red)
   fileprivate let tokenLabelTitle = VibesLabel(title: "homeView.appleTokenLabel")
@@ -43,8 +43,8 @@ class HomeViewController: UIViewController {
     super.viewDidLoad()
     updateLocationButton.setTitle(NSLocalizedString("homeView.updateLocationButton", comment: ""), for: .normal)
     view.backgroundColor = .white
-    view.addSubview(vibeDeviceId)
-    view.addSubview(vibeDeviceIdValue)
+    view.addSubview(vibesDeviceId)
+    view.addSubview(vibesDeviceIdValue)
     view.addSubview(tokenLabelTitle)
     view.addSubview(pushRegisteredLabel)
     view.addSubview(tokenLabelValue)
@@ -62,7 +62,7 @@ class HomeViewController: UIViewController {
     
     _ = viewModel.regDevBtnTitleSubj.asDriver().drive(self.registerButton.rx.title())
     _ = viewModel.regPushBtnTitleSubj.asDriver().drive(self.registerPushButton.rx.title())
-    _ = viewModel.deviceIdValueSubj.asDriver().drive(self.vibeDeviceIdValue.rx.text)
+    _ = viewModel.deviceIdValueSubj.asDriver().drive(self.vibesDeviceIdValue.rx.text)
     
     // Register to viewModel registerPushButton.state Observer
     _ = viewModel.pushButtonEnableStateSubj.asObservable()
@@ -94,50 +94,39 @@ class HomeViewController: UIViewController {
         .disposed(by: bag)
     
     // Observer for APNS push token
-    _ = appDelegate.tokenObserver.subscribe(onNext: {[weak self] token in
-            let tokenString = token.map { String(format: "%02.2hhx", $0) }.joined()
-            self?.tokenLabelValue.text = tokenString
-        })
+    appDelegate.tokenObserver
+        .map { $0.map { String(format: "%02.2hhx", $0) }.joined()}
+        .bind(to: self.tokenLabelValue.rx.text)
         .disposed(by: bag)
     
     // Button actions
-    _ = self.registerButton.rx.tap.subscribe { _ in
-        viewModel.registerOrUnregisterDevice()
-    }
-    .disposed(by: bag)
-    
-    _ = self.registerPushButton.rx.tap.subscribe { _ in
-        viewModel.registerOrUnregisterPush()
-    }
-    .disposed(by: bag)
-    
-    _ = self.updateLocationButton.rx.tap.subscribe { _ in
-        viewModel.updateLocation()
-    }
+    self.registerButton.rx.tap.bind { viewModel.registerOrUnregisterDevice() }.disposed(by: bag)
+    self.registerPushButton.rx.tap.bind { viewModel.registerOrUnregisterPush() }.disposed(by: bag)
+    self.updateLocationButton.rx.tap.bind { viewModel.updateLocation() }.disposed(by: bag)
   }
   
   /// Setup constraints for every UI elements added to the view
   fileprivate func setupConstraints() {
     // VibesDeviceID title label
-    self.view.addConstraint(NSLayoutConstraint(item: vibeDeviceId, attribute: .leading, relatedBy: .equal,
+    self.view.addConstraint(NSLayoutConstraint(item: vibesDeviceId, attribute: .leading, relatedBy: .equal,
                                            toItem: view, attribute: .leading,
                                            multiplier: 1.0, constant: 20.0))
-    self.view.addConstraint(NSLayoutConstraint(item: vibeDeviceId, attribute: .top, relatedBy: .equal,
+    self.view.addConstraint(NSLayoutConstraint(item: vibesDeviceId, attribute: .top, relatedBy: .equal,
                                            toItem: view, attribute: .top,
                                            multiplier: 1.0, constant: 100.0))
     // VibesDeviceID value label
-    self.view.addConstraint(NSLayoutConstraint(item: vibeDeviceIdValue, attribute: .leading, relatedBy: .equal,
-                                               toItem: vibeDeviceId, attribute: .leading,
+    self.view.addConstraint(NSLayoutConstraint(item: vibesDeviceIdValue, attribute: .leading, relatedBy: .equal,
+                                               toItem: vibesDeviceId, attribute: .leading,
                                                multiplier: 1.0, constant: 0.0))
-    self.view.addConstraint(NSLayoutConstraint(item: vibeDeviceIdValue, attribute: .top, relatedBy: .equal,
-                                               toItem: vibeDeviceId, attribute: .bottom,
+    self.view.addConstraint(NSLayoutConstraint(item: vibesDeviceIdValue, attribute: .top, relatedBy: .equal,
+                                               toItem: vibesDeviceId, attribute: .bottom,
                                                multiplier: 1.0, constant: 10.0))
     // AppleToken title label
     self.view.addConstraint(NSLayoutConstraint(item: tokenLabelTitle, attribute: .leading, relatedBy: .equal,
-                                               toItem: vibeDeviceId, attribute: .leading,
+                                               toItem: vibesDeviceId, attribute: .leading,
                                                multiplier: 1.0, constant: 0.0))
     self.view.addConstraint(NSLayoutConstraint(item: tokenLabelTitle, attribute: .top, relatedBy: .equal,
-                                               toItem: vibeDeviceIdValue, attribute: .bottom,
+                                               toItem: vibesDeviceIdValue, attribute: .bottom,
                                                multiplier: 1.0, constant: 20))
     // AppleToken status (registered PUSH status)
     self.view.addConstraint(NSLayoutConstraint(item: pushRegisteredLabel, attribute: .leading, relatedBy: .equal,
@@ -148,7 +137,7 @@ class HomeViewController: UIViewController {
                                                multiplier: 1.0, constant: 0.0))
     // AppleToken value label
     self.view.addConstraint(NSLayoutConstraint(item: tokenLabelValue, attribute: .leading, relatedBy: .equal,
-                                               toItem: vibeDeviceId, attribute: .leading,
+                                               toItem: vibesDeviceId, attribute: .leading,
                                                multiplier: 1.0, constant: 0.0))
     self.view.addConstraint(NSLayoutConstraint(item: tokenLabelValue, attribute: .top, relatedBy: .equal,
                                                toItem: tokenLabelTitle, attribute: .bottom,
@@ -179,8 +168,8 @@ class HomeViewController: UIViewController {
     self.view.addConstraint(NSLayoutConstraint(item: registerPushButton, attribute: .width, relatedBy: .equal,
                                                toItem: view, attribute: .width,
                                                multiplier: 0.90, constant: 0.0))
-    
-     // Update location button
+
+    // Update location button
     self.view.addConstraint(NSLayoutConstraint(item: updateLocationButton, attribute: .top, relatedBy: .equal,
                                                toItem: registerPushButton, attribute: .bottom,
                                                multiplier: 1.0, constant: 20))
@@ -193,7 +182,7 @@ class HomeViewController: UIViewController {
     self.view.addConstraint(NSLayoutConstraint(item: updateLocationButton, attribute: .width, relatedBy: .equal,
                                                toItem: view, attribute: .width,
                                                multiplier: 0.90, constant: 0.0))
-     // Image background
+    // Image background
     self.view.addConstraint(NSLayoutConstraint(item: imageBackground, attribute: .centerX, relatedBy: .equal,
                                                toItem: view, attribute: .centerX,
                                                multiplier: 1.0, constant: 0.0))
