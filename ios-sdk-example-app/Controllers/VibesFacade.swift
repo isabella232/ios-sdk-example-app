@@ -9,103 +9,84 @@
 import UIKit
 import VibesPush
 
-class VibesFacade {
-  /// Register the iOS device. This called should be done after
-  /// the user log in (vibes customer app logic).
-  /// - parameters : (Bool, String) -> Void, Bool (success/failure), String(error)
-  func registerDevice(completionHandler: @escaping (Bool, String, String) -> Void) {
-    Vibes.shared.registerDevice { result in // VibesResult<Credential>
-      if case let .success(credential) = result {
-        print("--> Register Device --> Success (deviceId: \(credential.deviceId), authToken: \(credential.authToken))")
-        completionHandler(true, credential.deviceId, "")
-        /// This is where you could pass along the vibes_device_id (here credential.deviceId) to your backend.endpoint.
-        // TODO: Call your backend endpoint and pass the vibes_device_id.
-      } else if case let .failure(error) = result {
-        var desc: String
-        switch error {
-        case .other(let other) :
-          desc = other
-        case .authFailed(let auth):
-          desc = auth
-        default:
-          desc = "Unknown"
-        }
-        print("--> Register Device --> Failure: \(desc)")
-        completionHandler(false, "", desc)
-      }
+class VibesFacade: VibesAPIDelegate {
+    fileprivate var registerDeviceCompletionHandler: ((String?, Error?) -> Void)?
+    fileprivate var unregisterDeviceCompletionHandler: ((Error?) -> Void)?
+    fileprivate var registerPushCompletionHandler: ((Error?) -> Void)?
+    fileprivate var unregisterPushCompletionHandler: ((Error?) -> Void)?
+    fileprivate var updateLocationCompletionHandler: ((Error?) -> Void)?
+
+    init() {
+        Vibes.shared.set(delegate: self)
     }
-  }
-  
-  /// Unregister the iOS device. If unregisterPush hasn't been called before,
-  /// unregistering a device, unregister push as well... clean plate!
-  /// - parameters : (Bool, String) -> Void, Bool (success/failure), String(error)
-  func unregisterDevice(completionHandler: @escaping (Bool, String) -> Void) {
-    Vibes.shared.unregisterDevice { result in // VibesResult<Void>
-      if case .success(_) = result {
-        print("--> Unregister Device -> Success")
-        completionHandler(true, "")
-      } else if case let .failure(error) = result {
-        var desc: String
-        switch error {
-        case .other(let other) :
-          desc = other
-        case .authFailed(let auth):
-          desc = auth
-        default:
-          desc = "Unknown"
-        }
-        print("--> Unregister Device -> Failure: \(desc)")
-        completionHandler(false, desc)
-      }
-    }
-  }
-  
-  /// Register the apple push token in Vibes plateform.
-  /// - parameters :
-  ///     token -> Apple push notification token
-  ///     (Bool, String) -> Void, Bool (success/failure), String(error)
-  func registerPush(token: Data, completionHandler: @escaping (Bool, String) -> Void) {
-    Vibes.shared.setPushToken(fromData: token)
-    Vibes.shared.registerPush { result in
-      if case .success(_) = result {
-        print("--> Register PUSH --> Success")
-        completionHandler(true, "")
-      } else if case .failure(let error) = result {
-        print("--> Register PUSH --> Failure: \(error)")
-        completionHandler(false, error.localizedDescription)
-      }
-    }
-  }
-  
-  /// Unregister the apple push token in Vibes plateform.
-  /// - parameters :
-  ///     token -> Apple push notification token
-  ///     (Bool, String) -> Void, Bool (success/failure), String(error)
-  func unregisterPush(token: Data, completionHandler: @escaping (Bool, String) -> Void) {
-    Vibes.shared.unregisterPush { result in
-      if case .success(_) = result {
-        print("--> Unregister PUSH --> Success")
-        completionHandler(true, "")
-      } else if case .failure(let error) = result {
-        print("--> Unregister PUSH --> Failure: \(error)")
-        completionHandler(false, error.localizedDescription)
-      }
-    }
-  }
     
-  /// Unregister the apple push token in Vibes plateform.
-  /// - parameters :
-  ///     token -> Apple push notification token
-  ///     (Bool, String) -> Void, Bool (success/failure), String(error)
-    func updateUserLocation(location: (lat: Double, long: Double), completionHandler: @escaping (Bool, String) -> Void) {
-      Vibes.shared.updateDevice(completion: { result in
-        if case .success(_) = result {
-            print("--> Update User Location --> Success")
-            completionHandler(true, "")
-        } else if case .failure(let error) = result {
-            print("--> Update User Location --> Failure: \(error)")
-            completionHandler(false, error.localizedDescription)
-        }
-      }, location: location)
-  }
+    /// Register the iOS device.
+    /// - parameters :
+    ///     - completionHandler: callback for the viewModel
+    func registerDevice(completionHandler: @escaping (String?, Error?) -> Void) {
+        registerDeviceCompletionHandler = completionHandler
+        Vibes.shared.registerDevice()
+    }
+    
+    /// Unregister the iOS device. If unregisterPush hasn't been called before,
+    /// unregistering a device, will unregister push as well... clean plate!
+    /// - parameters :
+    ///     - completionHandler: callback for the viewModel
+    func unregisterDevice(completionHandler: @escaping (Error?) -> Void) {
+        unregisterDeviceCompletionHandler = completionHandler
+        Vibes.shared.unregisterDevice()
+    }
+    
+    /// Register the device for push notification.
+    /// - parameters :
+    ///     token -> Apple push notification token
+    ///     completionHandler -> callback for the viewModel
+    func registerPush(token: Data, completionHandler: @escaping (Error?) -> Void) {
+        registerPushCompletionHandler = completionHandler
+        Vibes.shared.setPushToken(fromData: token)
+        Vibes.shared.registerPush()
+    }
+    
+    /// Unregister the device for push notification.
+    /// - parameters :
+    ///     token -> Apple push notification token
+    ///     completionHandler -> callback for the viewModel
+    func unregisterPush(token: Data, completionHandler: @escaping (Error?) -> Void) {
+        unregisterPushCompletionHandler = completionHandler
+        Vibes.shared.unregisterPush()
+    }
+    
+    /// Update the user location
+    /// - parameters :
+    ///     lat -> lattitude of the user
+    ///     long -> longitude of the user
+    ///     completionHandler -> callback for the viewModel
+    func updateUserLocation(lat: Double, long: Double, completionHandler: @escaping (Error?) -> Void) {
+        updateLocationCompletionHandler = completionHandler
+        Vibes.shared.updateDevice(lat: lat, long: long)
+    }
+    
+    ////////////////////////////////
+    /// VibesAPIDelegate methods ///
+    ////////////////////////////////
+    
+    func didRegisterDevice(deviceId: String?, error: Error?) {
+       registerDeviceCompletionHandler?(deviceId, error)
+    }
+    
+    func didUnregisterDevice(error: Error?) {
+        unregisterDeviceCompletionHandler?(error)
+    }
+    
+    func didRegisterPush(error: Error?) {
+        registerPushCompletionHandler?(error)
+    }
+    
+    func didUnregisterPush(error: Error?) {
+        unregisterPushCompletionHandler?(error)
+    }
+    
+    func didUpdateDeviceLocation(error: Error?) {
+        updateLocationCompletionHandler?(error)
+    }
 }

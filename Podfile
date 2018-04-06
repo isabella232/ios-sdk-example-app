@@ -12,7 +12,7 @@ target 'ios-sdk-example-app' do
   pod 'RxCocoa'
   # <<
 
-  pod 'VibesPush', '1.0.3.sw4'
+  pod 'VibesPush', '2.0.0.sw4'
   
   target "unit-tests" do
     inherit! :search_paths

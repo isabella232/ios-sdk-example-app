@@ -40,3 +40,5 @@ After the dependencies are installed, you are good to go.
 ## SDK Usage <a name="usage"></a>
 
 Everything you need to know on how to use the SDK is in the following classes `Controllers/VibesFacade.swift` and `AppDelegate`. 
+
+IMPORTANT: Remember to update your Vibes APP KEY in the AppDelegate.m (Search for YOUR APP KEY HERE)
