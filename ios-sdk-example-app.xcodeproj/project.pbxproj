@@ -23,7 +23,6 @@
 		446C32162062E5BE00EC3412 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446C32152062E5BE00EC3412 /* NotificationService.swift */; };
 		446C321A2062E5BE00EC3412 /* richPush.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 446C32132062E5BD00EC3412 /* richPush.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		44740FD41F82EACF009BB98F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 44740FD31F82EACF009BB98F /* Localizable.strings */; };
-		44740FD71F82EC55009BB98F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 44740FD51F82EC55009BB98F /* LaunchScreen.storyboard */; };
 		448A2A771F867DAB008FE354 /* VibesButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448A2A761F867DAB008FE354 /* VibesButton.swift */; };
 		448A2A791F868FE7008FE354 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448A2A781F868FE7008FE354 /* HomeViewModel.swift */; };
 		448A2A811F8690E0008FE354 /* VibesFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448A2A801F8690E0008FE354 /* VibesFacade.swift */; };
@@ -33,6 +32,7 @@
 		44A07A10206986940039F347 /* bells.caf in Resources */ = {isa = PBXBuildFile; fileRef = 44A07A0E206986940039F347 /* bells.caf */; };
 		44A118341F87CB4E008042B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 44A118331F87CB4E008042B2 /* Assets.xcassets */; };
 		44A95D351F82E14A003F4982 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A95D341F82E14A003F4982 /* AppDelegate.swift */; };
+		44B4C24E2079A4D900FDDC6E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 44B4C24C2079A4D900FDDC6E /* LaunchScreen.storyboard */; };
 		44DD01BA204DDFCB00042E21 /* ExampleConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DD01B9204DDFCB00042E21 /* ExampleConstant.swift */; };
 		44DF4C1D1F82E7CD006219D6 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DF4C1C1F82E7CD006219D6 /* HomeViewController.swift */; };
 		5B6EE632FCAE48E502FD1DBC /* Pods_unit_tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1F0BE499B3BD001A16ECBC6 /* Pods_unit_tests.framework */; };
@@ -83,7 +83,6 @@
 		446C32152062E5BE00EC3412 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		446C32172062E5BE00EC3412 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		44740FD31F82EACF009BB98F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
-		44740FD61F82EC55009BB98F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "ios-sdk-example-app/Base.lproj/LaunchScreen.storyboard"; sourceTree = SOURCE_ROOT; };
 		448A2A761F867DAB008FE354 /* VibesButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibesButton.swift; sourceTree = "<group>"; };
 		448A2A781F868FE7008FE354 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		448A2A801F8690E0008FE354 /* VibesFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibesFacade.swift; sourceTree = "<group>"; };
@@ -95,6 +94,7 @@
 		44A95D311F82E14A003F4982 /* ios-sdk-example-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-sdk-example-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		44A95D341F82E14A003F4982 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		44A95D3B1F82E14A003F4982 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		44B4C24D2079A4D900FDDC6E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "ios-sdk-example-app/Base.lproj/LaunchScreen.storyboard"; sourceTree = "<group>"; };
 		44DD01B9204DDFCB00042E21 /* ExampleConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExampleConstant.swift; path = "ios-sdk-example-app/Utils/ExampleConstant.swift"; sourceTree = SOURCE_ROOT; };
 		44DF4C1C1F82E7CD006219D6 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8A4CC6FEDDE5132B8ED60AF6 /* Pods_ios_sdk_example_app.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_sdk_example_app.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,9 +246,9 @@
 		44DF4C221F82E995006219D6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44B4C24C2079A4D900FDDC6E /* LaunchScreen.storyboard */,
 				44A07A0E206986940039F347 /* bells.caf */,
 				44A118331F87CB4E008042B2 /* Assets.xcassets */,
-				44740FD51F82EC55009BB98F /* LaunchScreen.storyboard */,
 				44740FD31F82EACF009BB98F /* Localizable.strings */,
 			);
 			path = Resources;
@@ -404,8 +404,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				44740FD71F82EC55009BB98F /* LaunchScreen.storyboard in Resources */,
 				44A118341F87CB4E008042B2 /* Assets.xcassets in Resources */,
+				44B4C24E2079A4D900FDDC6E /* LaunchScreen.storyboard in Resources */,
 				44740FD41F82EACF009BB98F /* Localizable.strings in Resources */,
 				44A07A0F206986940039F347 /* bells.caf in Resources */,
 			);
@@ -579,12 +579,13 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		44740FD51F82EC55009BB98F /* LaunchScreen.storyboard */ = {
+		44B4C24C2079A4D900FDDC6E /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				44740FD61F82EC55009BB98F /* Base */,
+				44B4C24D2079A4D900FDDC6E /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -601,7 +602,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.sdk-example-app.richPush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -617,7 +618,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.sdk-example-app.richPush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -633,7 +634,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ios-sdk-example-app.app/ios-sdk-example-app";
 			};
@@ -650,7 +651,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ios-sdk-example-app.app/ios-sdk-example-app";
 			};
@@ -774,6 +775,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = N68EHK7Q3H;
 				INFOPLIST_FILE = "ios-sdk-example-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.sdk-example-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -795,6 +797,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = N68EHK7Q3H;
 				INFOPLIST_FILE = "ios-sdk-example-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vibes.push.VibesPush.sdk-example-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";

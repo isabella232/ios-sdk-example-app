@@ -7,11 +7,26 @@
 		<key>ios-sdk-example-app.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>0</integer>
+		</dict>
+		<key>richPush.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>6</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>446C32122062E5BD00EC3412</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>448F5D7E1F881829002959C4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>44A95D301F82E14A003F4982</key>
 		<dict>
 			<key>primary</key>

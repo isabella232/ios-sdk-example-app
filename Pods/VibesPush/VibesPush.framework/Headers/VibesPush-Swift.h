@@ -240,6 +240,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) Vibes * _Nul
 /// events to Vibes backend.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) BOOL isRunningThroughUnitTest;)
 + (BOOL)isRunningThroughUnitTest SWIFT_WARN_UNUSED_RESULT;
+/// Convenient initializer
+/// \param appId the application ID provided by Vibes to identify this
+/// application
+///
++ (void)configureWithAppId:(NSString * _Nonnull)appId;
 /// Configure the shared Vibes instance. This must be called before using any
 /// of the functionality of Vibes, like registering your device.
 /// \param appId the application ID provided by Vibes to identify this
