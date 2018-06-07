@@ -1,37 +1,16 @@
 PODS:
-  - OHHTTPStubs (6.1.0):
-    - OHHTTPStubs/Default (= 6.1.0)
-  - OHHTTPStubs/Core (6.1.0)
-  - OHHTTPStubs/Default (6.1.0):
-    - OHHTTPStubs/Core
-    - OHHTTPStubs/JSON
-    - OHHTTPStubs/NSURLSession
-    - OHHTTPStubs/OHPathHelpers
-  - OHHTTPStubs/JSON (6.1.0):
-    - OHHTTPStubs/Core
-  - OHHTTPStubs/NSURLSession (6.1.0):
-    - OHHTTPStubs/Core
-  - OHHTTPStubs/OHPathHelpers (6.1.0)
-  - OHHTTPStubs/Swift (6.1.0):
-    - OHHTTPStubs/Default
-  - RxCocoa (3.6.1):
-    - RxSwift (~> 3.6)
-  - RxSwift (3.6.1)
-  - VibesPush (2.0.0.sw4)
+  - VibesPush (2.0.00.sw41)
 
 DEPENDENCIES:
-  - OHHTTPStubs
-  - OHHTTPStubs/Swift
-  - RxCocoa
-  - RxSwift (~> 3.0)
-  - VibesPush (= 2.0.0.sw4)
+  - VibesPush (= 2.0.0.sw41)
+
+SPEC REPOS:
+  https://github.com/vibes/pod_specs.git:
+    - VibesPush
 
 SPEC CHECKSUMS:
-  OHHTTPStubs: 1e21c7d2c084b8153fc53d48400d8919d2d432d0
-  RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
-  RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
-  VibesPush: 09886face6e4147ce39d384cb796441ba6c53a71
+  VibesPush: 2b14a7753e15696f0546ea91bf9369e39bd35ecc
 
-PODFILE CHECKSUM: 3a75d8a7db5a37314f3662809cab1b74ed66f1b6
+PODFILE CHECKSUM: 87274abe497016a0ac811e803534017015ed5785
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.3

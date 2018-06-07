@@ -2,129 +2,126 @@
 //  AppDelegate.swift
 //  ios-sdk-example-app
 //
-//  Created by Jean-Michel Barbieri on 10/2/17.
 //  Copyright © 2017 Vibes Media. All rights reserved.
-//
 
 import UIKit
-import VibesPush
 import UserNotifications
-import RxSwift
+import VibesPush
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var window: UIWindow?
-    fileprivate let navigationController = UINavigationController()
-    public let tokenObserver = ReplaySubject<Data>.create(bufferSize: 1)
-    
-    // Constants
-    fileprivate let kAppKey = "[YOUR APP KEY HERE]" /// Change the value with the one provided by Vibes
-    fileprivate let kClientDataKey = "client_app_data"
-    fileprivate let kDeepLinkKey = "deep_link"
-    fileprivate let kPushDeepLinkView = "pushView"
-    
-    // ViewControllers
-    fileprivate let deepLinkViewController = PushNotificationViewController()
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        Vibes.configure(appId: kAppKey,
-                        trackedEventTypes: [TrackedEventType.launch, TrackedEventType.clickthru] as NSArray,
-                        storageType: VibesStorageEnum.KEYCHAIN,
-                        advertisingId: "blank",
-                        logger: nil, // if nil it will take the default one `ConsoleLogger`
-                        apiUrl: nil) // if nil it will take the default one
-        
-        // Push notification subscription
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().delegate = self
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
-                if granted {
-                    DispatchQueue.main.async {
-                        UIApplication.shared.registerForRemoteNotifications()
-                    }
-                } else {
-                    // Not the point of this example app
-                }
-            }
-        } else {
-            let notificationSettings = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
-            application.registerUserNotificationSettings(notificationSettings)
-        }
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        if let window = window {
-            window.backgroundColor = UIColor.white
-            navigationController.viewControllers = [HomeViewController()]
-            window.rootViewController = navigationController
-            window.makeKeyAndVisible()
-        }
-        
-        return true
-    }
-    
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // Following is used to display the token and save it in the PasteBoard
-        let userDefault = UserDefaults.standard
-        userDefault.setValue(deviceToken, forKey: ExampleConstant.APNS_TOKEN.rawValue)
-        userDefault.synchronize()
-        
-        tokenObserver.onNext(deviceToken)
-        
-        // You can here register push, or if the push registration depends on the user being logged in or not, you can
-        // add the logic here
-        Vibes.shared.setPushToken(fromData: deviceToken)
-        // If the user is logged in then ...
-        // Vibes.shared.registerPush(completion: <#T##((VibesResult<Void>) -> Void)?##((VibesResult<Void>) -> Void)?##(VibesResult<Void>) -> Void#>)
-    }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // reset badging counter
-        application.applicationIconBadgeNumber = 0;
-    }
-    
-    
-    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
-        if (notificationSettings.types != .none) {
-            application.registerForRemoteNotifications()
-        }
-    }
-    
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        // Depending on your application logic, you could call unregister push here
-        // Vibes.shared.unregisterPush(completion: <#T##((VibesResult<Void>) -> Void)?##((VibesResult<Void>) -> Void)?##(VibesResult<Void>) -> Void#>)
-    }
-    
-    @available(iOS 10.0, *)
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        completionHandler()
-        receivePushNotif(userInfo: response.notification.request.content.userInfo)
-    }
-    
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        receivePushNotif(userInfo: userInfo)
-        completionHandler(.newData)
-    }
-    
-    /// When the user clicks on a push notif, two events will be sent to Vibes backend: .launch, .clickthru events.
-    /// If you specify a value for 'deep_link' in client_app_data, you can redirect the user to the viewcontrollers of
-    /// your choice when he clicks on the push notification. The deep_link format is free
-    /// (best practice:{nameApp}://{viewcontrollers}{%parameters}
-    fileprivate func receivePushNotif(userInfo: [AnyHashable : Any]) {
-        Vibes.configure(appId: kAppKey,
-                        trackedEventTypes: [TrackedEventType.launch, TrackedEventType.clickthru] as NSArray,
-                        storageType: VibesStorageEnum.KEYCHAIN,
-                        advertisingId: "blank",
-                        logger: nil, // if nil it will take the default one `ConsoleLogger`
-                        apiUrl: nil) // if nil it will take the default one
-        Vibes.shared.receivedPush(with: userInfo)
-        
-        // Over simplified deep_link mechanism, but you get the idea.
-        guard let client_data = userInfo[kClientDataKey] as? [String: Any],
-            let deepLink = client_data[kDeepLinkKey] as? String
-            else { return }
-        if (deepLink == kPushDeepLinkView) {
-            self.navigationController.pushViewController(deepLinkViewController, animated: true)
-        }
-    }
-}
 
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, VibesAPIDelegate {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil) -> Bool {
+    Vibes.configure(appId: "YOUR_APP_ID")
+    Vibes.shared.set(delegate: self)
+
+    Vibes.shared.registerDevice()
+
+    if #available(iOS 10.0, *) {
+      self.requestNotificationPermissionsIOS10(application: application)
+    } else {
+      self.requestNotificationPermissionsIOS9(application: application)
+    }
+
+    return true
+  }
+
+  // MARK: - All Push Notifications
+
+  // Handle successful retrieval of a push token from Apple
+  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Vibes.shared.setPushToken(fromData: deviceToken)
+    Vibes.shared.registerPush()
+    Vibes.shared.updateDevice(lat: 41.8686839, long: -87.8075274)
+  }
+
+  // MARK: - iOS 9 Push Notifications
+
+  // Request permission to display user notifications
+  func requestNotificationPermissionsIOS9(application: UIApplication) {
+    let notificationSettings = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
+    application.registerUserNotificationSettings(notificationSettings)
+  }
+
+  // Callback when user grants or denies permission to display user notifications. If granted: register for remote notifications.
+  func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
+    if notificationSettings.types != .none {
+      application.registerForRemoteNotifications()
+    }
+  }
+
+  // Callback for when a remote notification is received.
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    Vibes.shared.receivedPush(with: userInfo)
+    self.handlePushNotification(userInfo: userInfo)
+
+    completionHandler(.newData)
+  }
+
+  // MARK: - iOS 10+ Push Notifications
+
+  // Request permission to display user notifications. If granted: register for remote notifications.
+  @available(iOS 10.0, *)
+  func requestNotificationPermissionsIOS10(application: UIApplication) {
+    UNUserNotificationCenter.current().delegate = self
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, _) in
+      if granted {
+        DispatchQueue.main.async {
+          UIApplication.shared.registerForRemoteNotifications()
+        }
+      }
+    }
+  }
+
+  // Callback for when a remote notification is received.
+  @available(iOS 10.0, *)
+  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Swift.Void) {
+    let userInfo = response.notification.request.content.userInfo
+    Vibes.shared.receivedPush(with: userInfo)
+    self.handlePushNotification(userInfo: userInfo)
+
+    completionHandler()
+  }
+
+  // MARK: - Application-specific handling of push notification
+
+  func handlePushNotification(userInfo: [AnyHashable: Any]) {
+    print("received push with details: \(userInfo)")
+  }
+
+  // MARK: - VibesAPIDelegate
+
+  // Callback for when the device is registered with Vibes
+  func didRegisterDevice(deviceId: String?, error: Error?) {
+    print("didRegisterDevice - \(successOrError(error, fallback: "deviceId: \(deviceId ?? ""))"))")
+  }
+
+  // Callback for when the device is unregistered with Vibes
+  func didUnregisterDevice(error: Error?) {
+    print("didUnregisterDevice - \(successOrError(error))")
+  }
+
+  // Callback for when the device's push token is sent to Vibes
+  func didRegisterPush(error: Error?) {
+    print("didRegisterPush - \(successOrError(error))")
+  }
+
+  // Callback for when the device's push token is removed from Vibes
+  func didUnregisterPush(error: Error?) {
+    print("didUnregisterPush - \(successOrError(error))")
+  }
+
+  // Callback for when the device's location is updated
+  func didUpdateDeviceLocation(error: Error?) {
+    print("didUpdateDeviceLocation - \(successOrError(error))")
+  }
+
+  // A small utility function to either display an error or success message
+  private func successOrError(_ error: Error?, fallback: String = "success") -> String {
+    if let error = error {
+      return "error: \(error)"
+    } else {
+      return fallback
+    }
+  }
+}
