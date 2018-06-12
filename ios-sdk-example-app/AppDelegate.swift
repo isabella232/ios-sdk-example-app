@@ -32,7 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     Vibes.shared.setPushToken(fromData: deviceToken)
     Vibes.shared.registerPush()
-    Vibes.shared.updateDevice(lat: 41.8686839, long: -87.8075274)
   }
 
   // MARK: - iOS 9 Push Notifications
