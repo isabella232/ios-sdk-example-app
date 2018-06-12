@@ -1,7 +1,7 @@
-# Vibes SDK example App - iOS
+# Vibes SDK example App - iOS (Swift)
 
-This is an example app using the Vibes SDK. It implements device
-registration/unregistration and push registration/unregistration.
+This is an example app using the Vibes SDK. It implements device and push
+registration.
 
 - [Requirements](#requirements)
 - [Setup](#installation)
@@ -39,9 +39,13 @@ $ pod update
 ```
 
 This will install all of the necessary dependencies, including the Vibes iOS
-SDK.  After the dependencies are installed, you are good to go:
+SDK. 
+
+## SDK Usage <a name="usage"></a>
+
+After the dependencies are installed, you are good to go:
 
 1. Add your Vibes App ID in `AppDelegate.swift`
 2. "Run" the app on a device (push notifications are not supported in the iOS
    Simulator)
-3.  Check the console to see success or error messages.
+3. Check the console to see success or error messages.
