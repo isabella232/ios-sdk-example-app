@@ -2,7 +2,7 @@ PODS:
   - VibesPush (2.0.00.sw41)
 
 DEPENDENCIES:
-  - VibesPush (= 2.0.0.sw41)
+  - VibesPush (= 2.0.00.sw41)
 
 SPEC REPOS:
   https://github.com/vibes/pod_specs.git:
@@ -11,6 +11,6 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   VibesPush: 2b14a7753e15696f0546ea91bf9369e39bd35ecc
 
-PODFILE CHECKSUM: 87274abe497016a0ac811e803534017015ed5785
+PODFILE CHECKSUM: a3ccb2a1cad5e3f742de51345c99869a24e1fb44
 
 COCOAPODS: 1.5.3

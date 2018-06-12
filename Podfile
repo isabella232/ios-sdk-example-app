@@ -5,5 +5,5 @@ source 'https://github.com/vibes/pod_specs.git'
 
 target 'ios-sdk-example-app' do
   use_frameworks!
-  pod 'VibesPush', '2.0.0.sw41'
+  pod 'VibesPush', '2.0.00.sw41'
 end
