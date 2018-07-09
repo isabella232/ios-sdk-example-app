@@ -194,7 +194,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ios-sdk-example-app/Pods-ios-sdk-example-app-frameworks.sh",
-				"${PODS_ROOT}/VibesPush/VibesPush.framework",
+				"${BUILT_PRODUCTS_DIR}/VibesPush/VibesPush.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (

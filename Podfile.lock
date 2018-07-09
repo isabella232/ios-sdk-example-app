@@ -1,16 +1,24 @@
 PODS:
-  - VibesPush (2.0.00.sw41)
+  - VibesPush (2.1.00):
+    - VibesPush/Core (= 2.1.00)
+  - VibesPush/Core (2.1.00)
 
 DEPENDENCIES:
-  - VibesPush (= 2.0.00.sw41)
+  - "VibesPush (from `git@github.com:vibes/push-sdk-ios`, tag `2.1.00`)"
 
-SPEC REPOS:
-  https://github.com/vibes/pod_specs.git:
-    - VibesPush
+EXTERNAL SOURCES:
+  VibesPush:
+    :git: "git@github.com:vibes/push-sdk-ios"
+    :tag: 2.1.00
+
+CHECKOUT OPTIONS:
+  VibesPush:
+    :git: "git@github.com:vibes/push-sdk-ios"
+    :tag: 2.1.00
 
 SPEC CHECKSUMS:
-  VibesPush: 2b14a7753e15696f0546ea91bf9369e39bd35ecc
+  VibesPush: b0a6d53401a226d5d3fcd2a1e66c442d2fc0a725
 
-PODFILE CHECKSUM: a3ccb2a1cad5e3f742de51345c99869a24e1fb44
+PODFILE CHECKSUM: a50c1a9345f917d62a12cd8c77cf1d1c25666305
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.5.0
